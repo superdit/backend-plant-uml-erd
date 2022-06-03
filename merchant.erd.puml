@@ -1,0 +1,52 @@
+@startuml
+left to right direction
+
+class merchants {
+    _id : string
+    ..
+    _user_id : string
+    name : string
+    slug : string
+    open : bool
+    description : string
+    notes : string
+    rating : int
+    followers : int
+    status : string
+    product_counts : {}
+    \t master : int
+    \t variant : int
+    \t master_active : int
+    \t master_inactive : int
+    \t sold : int
+    \t review : int
+    rating_count : int
+    etalase_count : int
+    img_logo : string
+    img_banner : string
+    active : bool
+    delivery_policy : string
+    payment_policy : string
+    refund_policy : string
+    created_at : int
+    created_date : string
+    modified_at : int
+    modified_date : string
+}
+
+class etalase {
+    _id : string
+    ..
+    _merchant_id : string
+    name : string
+    status : bool
+    count_product : int
+    display_order : int
+    created_at : string
+    created_date : int
+    modified_at : string
+    modified_date : int
+}
+
+merchants::_id --* etalase::_merchant_id
+@enduml

@@ -1,0 +1,82 @@
+@startuml
+left to right direction
+
+class payment_gateways {
+    _id : string
+    ..
+    name : string
+}
+
+class payment_channels {
+    _id : string
+    ..
+    name : string
+    display_order : int
+}
+
+class payment_methods {
+    _id : string
+    ..
+    _channel_id : string
+    _channel_name : string
+    _gateway_id : string
+    _gateway_name : string
+    name : string
+    code : string
+    active : bool
+    display_order : int
+    img : string
+    topup : bool
+    retail_order : bool
+    ppob : bool
+    settings : [{}]
+    \t name : string
+    \t value : string
+}
+note bottom of payment_methods 
+    - topup : bisa/tidak digunakan pada transaksi topup
+    - retail_order : bisa/tidak digunakan pada transaksi retail
+    - ppob : bisa/tidak digunakan pada transaksi ppob
+end note
+
+class payment_topups {
+    _id : string
+    full_name : string
+    email : string
+    topup_id : string
+    _gateway_name : string
+    _channel_name : string
+    _method_code : string
+    _method_name : string
+    paid : bool
+    request_amount : int
+    bill_amount : int
+    bill_account : string
+    bill_number : string
+    request : {}
+    \t url : string
+    \t header : string
+    \t body : string
+    response : string
+    paid_response : string
+    created_at : int
+    created_date : string
+    modified_at : int
+    modified_date : string
+    expired_at : int
+    expired_date : string
+}
+note right of payment_topups 
+    - nilai _gateway_name, _channel_name, _method_code, _method_name tidak berubah 
+        walaupun nilai payment_gateways, payment_channels & payment methods berubah
+        hanya menunjukan historical data
+    - paid_response : bisa berbeda-beda sesuai response gateway
+end note
+
+payment_gateways::_id --* payment_methods::_gateway_id
+payment_gateways::name --* payment_methods::_gateway_name
+
+payment_channels::_id --* payment_methods::_channel_id
+payment_channels::name --* payment_methods::_channel_name
+
+@enduml

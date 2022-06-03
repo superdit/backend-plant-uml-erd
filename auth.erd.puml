@@ -1,0 +1,107 @@
+@startuml
+left to right direction
+
+class auths {
+    _id : string
+    ..
+    _old_id : string
+    username : string
+    email : string
+    phone : string
+    password : string
+    old_password : string
+    pin : string
+    old_pin : string
+    full_name : string
+    locked : bool
+    verified : bool
+    email_verified : bool
+    phone_verified : bool
+    strict_device : bool
+    created_at : int
+    created_date : string
+    modified_at : int 
+    modified_date : string
+}
+note top of auths 
+    - password: kedepan bisa tidak dipakai, login gunakan otp
+    - _old_id: tidak dipakai, jika register dari golang
+    - old_password: tidak dipakai, jika register dari golang
+    - old_pin: tidak dipakai, jika register dari golang
+    - strict_device: jika ingin ada restrict device login
+end note
+
+class auth_verifications {
+  _id : string
+  ..
+  _auth_id : string
+  code : string
+  identity : string
+  action : string
+  channel : string
+  created_at : int
+  created_date : string
+  modified_at : int
+  modified_date : string
+  expired_at : int
+  expired_date : string
+}
+note left of auth_verifications 
+    - identity: isi username, email atau phone dari user auth
+    - channel: value -> EMAIL / SMS / WHATSAPP
+    - action: value -> REGISTER / FORGOT PASS / CHANGE EMAIL 
+            / CHANGE PHONE / LOGIN STRICT DEVICE
+end note
+
+class auth_sessions {
+    _id : string
+    ..
+    _auth_id : string
+    _auth_old_id : string
+    username : string
+    phone : string
+    fcm : string
+    ip : string
+    os : string
+    mobile_version : string
+    user_agent : string
+    logout : bool
+    created_at : int
+    created_date : string
+    last_active_at : int
+    last_active_date : string
+    expired_at : string
+    expired_date : string
+}
+
+class auth_trusted_devices {
+    _id : string
+    ..
+    _auth_id : string
+    type : string
+    os : string
+    ip : string
+    country : string
+    created_at : int
+    created_date : string
+}
+
+class auth_failed_logins {
+    _id : string
+    _auth_id : string
+    failed_login_count : int
+    ip : string
+    modified_at : int
+    modified_date : string
+    expired_at : int
+    expired_date : string
+}
+note left of auth_failed_logins 
+    - failed_login_count: increment +1 jika login gagal
+end note
+
+auths::_id --* auth_verifications::_auth_id
+auths::_id --* auth_sessions::_auth_id
+auths::_id --* auth_trusted_devices::_auth_id
+auths::_id --> auth_failed_logins::_auth_id
+@enduml

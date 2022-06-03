@@ -1,0 +1,389 @@
+@startuml
+left to right direction
+
+class shipping_gateways {
+    _id : string
+    ..
+    name : string
+    settings : [{}]
+    \t name : string
+    \t value : string
+}
+
+class shipping_couriers {
+    _id : string
+    ..
+    _gateway_id : string
+    _gateway_name : string
+    name : string
+    img : string
+    active : bool
+    cashless : bool
+    automatic_awb : bool
+}
+
+class shipping_estimations {
+    _id : string
+    ..
+    name : string
+    description : string
+    fastest_delivery : int
+    slowest_delivery : int
+    delivery_tim_unit : string
+    display_order : int
+}
+
+class shipping_services {
+    _id : string
+    ..
+    _estimation_id : string
+    _estimation_name : string
+    _courier_id : string
+    _courier_name : string
+    name : string
+    description : string
+    alias : string
+    active : bool
+}
+
+class shipping_product_items {
+    _id : string
+    ..
+    _product_id : string
+    price : int
+    stock : int
+    weight : int
+    weight_unit : string
+    active : bool
+    modified_at : int
+    modified_date : string
+}
+
+shipping_gateways::_id --* shipping_couriers::_gateway_id
+shipping_estimations::_id --* shipping_services::_estimation_id
+shipping_couriers::_id --* shipping_services::_courier_id
+
+class merchant_courier_services #back:Aquamarine {
+    _id : string
+    ..
+    _merchant_id : string
+    couriers : [{}]
+    \t _courier_id : string
+    \t _courier_name : string
+    \t services : [{}]
+    \t\t _service_id : string
+    \t\t _service_name : string
+}
+note right of merchant_courier_services 
+    - collection untuk service dari kurir yg dipilih merchant
+end note
+
+class merchant_courier_prices #back:Aquamarine {
+    _id : string
+    ..
+    _merchant_id : string
+    default_price : int
+    default_etd : string
+    cities : [{}]
+    \t city_id :string
+    \t city_name :string
+    \t price : int
+    \t etd : string
+}
+note right of merchant_courier_prices 
+    - collection untuk setting harga kurir toko
+    - etd : estimation time delivery days
+    - kedepan bisa fleksibel tidak hanya berdasarkan kota saja
+end note
+
+class product_items #back:Aquamarine {
+    _id : string
+    ..
+    _product_id : string
+    price : int
+    stock : int
+    length : int
+	width : int
+	height : int
+    weight : int
+    weight_unit : string
+    active : bool
+    modified_at : int
+    modified_date : string
+}
+note right of product_items 
+    - collection duplicate dari product service
+      info berat, panjang, lebar, tinggi untuk kalkulasi ongkir
+    - panjang, lebar, tinggi dalam satuan cm
+end note
+
+class "user_carts (duplicate)" as user_carts #back:Aquamarine {
+    _id : string
+    ..
+    _user_address_id : string
+    merchants : [{}]
+    \t merchant_id : string
+    \t name : string
+    \t slug : string
+    \t slug : string
+    \t location : string
+    \t products : [{}]
+    \t\t product_id : string
+    \t\t product_item_id : string
+    \t\t name : string
+    \t\t price : int
+    \t\t qty : int
+    \t\t img : string
+    \t\t length : int
+	\t\t width : int
+	\t\t height : int
+    \t\t weight : int
+    \t\t weight_unit : string
+    \t\t picked : true
+    \t\t message : true
+    \t shipping : {}
+    \t\t courier : string
+    \t\t service : string
+    \t\t cost : int
+    \t\t insurance : bool
+    modified_at : int
+    modified_date : string
+}
+note right of user_carts 
+    - collection duplicate dari user service
+    untuk menghitung berat barang, bisa berubah sesuai address user  
+end note
+
+class jne_branches #back:lightblue {
+    _id : int
+    ..
+    code : string
+    name : string
+}
+
+class jne_origins #back:lightblue {
+    _id : int
+    ..
+    code : string
+    name : string
+}
+
+class jne_destinations #back:lightblue {
+    _id : int
+    ..
+    country : string
+    province : string
+    city : string
+    district : string
+    subdistrict : string
+    zip_code : string
+    tariff_code : string
+}
+
+class rajaongkir_provices #back:orange {
+    _id : string
+    ..
+    province : string
+}
+
+class rajaongkir_cities #back:orange {
+    _id : string
+    _province_id : string
+    province : string
+    type : string
+    name : string
+    postal_code : string
+}
+
+class rajaongkir_subdistricts #back:orange {
+    _id : string
+    ..
+    _province_id : string
+    _city_id : string
+    province : string
+    city : string
+    type : string
+    name : string
+}
+
+class rajaongkir_districts #back:orange {
+    _id : string
+    _province_id : string
+    _city_id : string
+    province : string
+    city : string
+    type : string
+    name : string
+}
+
+rajaongkir_provices::_id --* rajaongkir_cities::_province_id
+rajaongkir_provices::_id --* rajaongkir_subdistricts::_province_id
+rajaongkir_provices::_id --* rajaongkir_districts::_province_id
+rajaongkir_cities::_id --* rajaongkir_subdistricts::_city_id
+rajaongkir_cities::_id --* rajaongkir_districts::_city_id
+
+class shipper_provinces #back:red {
+    _id : string
+    ..
+    name : string
+}
+
+class shipper_cities #back:red {
+    _id : string
+    ..
+    _province_id : string
+    name : string   
+}
+
+class shipper_subdistricts #back:red {
+    _id : string
+    ..
+    _city_id : string
+    name : string
+    alias : string
+}
+
+class shipper_areas #back:red {
+    _id : string
+    _subdistrict_id : string
+    name : string
+    alias : string
+    postcode : string
+}
+
+class shipper_coverage_infos #back:red {
+    _id : string
+    ..
+    _subdistrict_id : string
+    _city_id : string
+    _province_id : string
+    code : string
+    area : string
+    area_as : string
+    subdistrict_name : string
+    city_name : string
+}
+
+shipper_provinces::_id --* shipper_cities::_province_id
+shipper_cities::_id --* shipper_subdistricts::_city_id
+shipper_subdistricts::_id --* shipper_areas::_subdistrict_id
+shipper_provinces::_id --* shipper_coverage_infos::_province_id
+shipper_cities::_id --* shipper_coverage_infos::_city_id
+shipper_subdistricts::_id --* shipper_coverage_infos::_subdistrict_id
+
+class address_provinces #back:lime {
+    _id : string
+    ..
+    name : string
+}
+
+class address_cities #back:lime {
+    _id : string
+    ..
+    _province_id : string
+    province_name : string
+    name : string
+}
+
+class address_districts #back:lime {
+    _id : string
+    ..
+    _province_id : string
+    _city_id : string
+    province_name : string
+    city_name : string
+    name : string
+}
+
+class address_subdistricts #back:lime {
+    _id : string
+    ..
+    _province_id : string
+    _city_id : string
+    _district_id : string
+    province_name : string
+    city_name : string
+    district_name : string
+    name : string
+}
+
+class address_postal_codes #back:lime {
+    _id : string
+    ..
+    _province_id : string
+    _city_id : string
+    _district_id : string
+    _subdistrict_id : string
+    province_name : string
+    city_name : string
+    district_name : string
+    subdistrict_name : string
+    postal_code : string
+}
+
+address_provinces::_id --* address_cities::_province_id
+address_provinces::_id --* address_districts::_province_id
+address_provinces::_id --* address_subdistricts::_province_id
+address_provinces::_id --* address_postal_codes::_province_id
+address_cities::_id --* address_districts::_city_id
+address_cities::_id --* address_subdistricts::_city_id
+address_cities::_id --* address_postal_codes::_city_id
+address_districts::_id --* address_subdistricts::_district_id
+address_districts::_id --* address_postal_codes::_district_id
+address_subdistricts::_id --* address_postal_codes::_subdistrict_id
+
+class user_addresses #back:Khaki {
+    _id : string
+    ..
+    _province_id : string
+    _city_id : string
+    _district_id : string
+    _subdistrict_id : string
+    province_name : string
+    city_name : string
+    district_name : string
+    subdistrict_name : string
+    postal_code : string
+    name : string
+    receiver : string
+    phone : string
+    address : string
+    latitude : string
+    longitude : string
+    default : bool
+    modified_at : int
+    modified_date : string
+}
+
+class merchant_addresses #back:Khaki {
+    _id : string
+    ..
+    _province_id : string
+    _city_id : string
+    _district_id : string
+    _subdistrict_id : string
+    province_name : string
+    city_name : string
+    district_name : string
+    subdistrict_name : string
+    postal_code : string
+    name : string
+    address : string
+    latitude : string
+    longitude : string
+    default : bool
+    type : string
+    modified_at : int
+    modified_date : string
+}
+
+address_provinces::_id --* user_addresses::_province_id
+address_provinces::_id --* merchant_addresses::_province_id
+address_cities::_id --* user_addresses::_city_id
+address_cities::_id --* merchant_addresses::_city_id
+address_districts::_id --* user_addresses::_district_id
+address_districts::_id --* merchant_addresses::_district_id
+address_subdistricts::_id --* user_addresses::_subdistrict_id
+address_subdistricts::_id --* merchant_addresses::_subdistrict_id
+
+@enduml

@@ -1,0 +1,76 @@
+@startuml
+left to right direction
+
+class users {
+    _id : string
+    ..
+    full_name : string
+    image : string
+    birth_date : string
+    gender : string
+    merchant : bool
+    created_at : int
+    created_date : string
+    modified_at : int
+    modified_date : string
+}
+
+class user_carts {
+    _id : string
+    ..
+    _user_address_id : string
+    merchants : [{}]
+    \t merchant_id : string
+    \t name : string
+    \t slug : string
+    \t status : string
+    \t location : string
+    \t products : [{}]
+    \t\t product_id : string
+    \t\t product_item_id : string
+    \t\t name : string
+    \t\t price : int
+    \t\t qty : int
+    \t\t img : string
+    \t\t length : int
+	\t\t width : int
+	\t\t height : int
+    \t\t weight : int
+    \t\t weight_unit : string
+    \t\t picked : true
+    \t\t message : true
+    \t shipping : {}
+    \t\t courier : string
+    \t\t service : string
+    \t\t cost : int
+    \t\t insurance : bool
+    modified_at : int
+    modified_date : string
+}
+note top of user_carts 
+    - shipping akan terisi jika user sudah memilih courier service
+end note
+
+class user_product_wishlists {
+    _id : string
+    ..
+    _user_id : string
+    product : {}
+    \t _product_id : string
+    \t name : string
+    \t min_price : int
+    \t max_price : int
+    \t img : string
+    \t stock_available : bool
+    merchant : {}
+    \t _merchant_id : string
+    \t location : string
+    created_at : int
+    created_date : string
+    modififed_at : int
+    modified_date : string
+}
+
+users::_id --> user_carts::_id
+users::_id --* user_product_wishlists::_user_id
+@enduml

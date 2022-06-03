@@ -1,0 +1,53 @@
+@startuml
+database db_auths {
+    class db_auths_server_info {
+        <<MongoDB Replica>>
+        ..
+        ip:
+        68.183.181.151:27017
+        68.183.185.30:27017 
+        68.183.177.166:27017
+    }
+    class halped_auth {
+        auths
+        auth_sessions
+        auth_verifications
+    }
+}
+
+database db_users {
+    class db_users_server_info {
+        <<MongoDB Replica>>
+        ..
+        ip:
+        68.183.181.151:27017
+        68.183.185.30:27017 
+        68.183.177.166:27017
+    }
+    class halped_user {
+        users
+        user_wishlists
+    }
+}
+
+package foo2 <<Rectangle>> {
+  class Class2
+}
+
+package foo3 <<Folder>> {
+  class Class3
+}
+
+package foo4 <<Frame>> {
+  class Class4
+}
+
+package foo5 <<Cloud>> {
+  class Class5
+}
+
+package foo6 <<Database>> {
+  class Class6
+}
+
+@enduml
